@@ -9,6 +9,8 @@ Touch the screen edge under the panel (or hover its visible part) and it comes t
 Windows raised or opened after that cover it again; windows that were below it stay below.
 While hovered, while one of its popups is open, in edit mode, or while an applet needs
 attention, it stays above everything.
+<img width="566" height="624" alt="image" src="https://github.com/user-attachments/assets/17253263-e8e4-45a6-bef9-28d726a29767" />
+<img width="3785" height="781" alt="image" src="https://github.com/user-attachments/assets/958f51b7-28e2-45ae-be66-bd1aa00f7fa9" />
 
 ## Parts
 
