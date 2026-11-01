@@ -1,0 +1,65 @@
+/*
+    SPDX-FileCopyrightText: 2026 Benji Weber
+    SPDX-License-Identifier: GPL-2.0-or-later
+
+    Wraps the stock panel settings and adds a "Windows can cover" entry to the
+    Visibility dropdown. If the dropdown can't be found (a future Plasma
+    changed it), the stock dialog is shown unchanged.
+*/
+
+import QtQuick
+import org.kde.plasma.shell
+import org.windowscancover as WCC
+import "file://@STOCK_SHELL_DIR@/contents/configuration" as Stock
+
+Stock.PanelConfiguration {
+    id: windowsCanCoverDialog
+
+    WCC.CoverSetting {
+        id: coverSetting
+        containment: plasmoid
+    }
+
+    function findVisibilityBox(item) {
+        const goBelow = i18ndc("plasma_shell_org.kde.plasma.desktop", "@item:inlistbox", "Windows go below");
+        if (item.previewIndex !== undefined && item.model && item.model.length === 4 && item.model[3] === goBelow) {
+            return item;
+        }
+        for (const child of item.children) {
+            const found = findVisibilityBox(child);
+            if (found) {
+                return found;
+            }
+        }
+        return null;
+    }
+
+    Component.onCompleted: {
+        const box = findVisibilityBox(windowsCanCoverDialog);
+        if (!box) {
+            console.warn("windows-can-cover: visibility dropdown not found, option not added");
+            return;
+        }
+        const coverIndex = box.model.length;
+        box.model = Array.from(box.model).concat([i18nc("@item:inlistbox panel visibility", "Windows can cover")]);
+        box.currentIndex = Qt.binding(() => {
+            switch (panel?.visibilityMode) {
+            case Panel.AutoHide:
+                return 1;
+            case Panel.DodgeWindows:
+                return 2;
+            case Panel.WindowsGoBelow:
+                return coverSetting.windowsCanCover ? coverIndex : 3;
+            default:
+                return 0;
+            }
+        });
+        // Runs after the stock handler, which maps the unknown index to "Always visible".
+        box.activated.connect(index => {
+            coverSetting.windowsCanCover = index === coverIndex;
+            if (index === coverIndex) {
+                panel.visibilityMode = Panel.WindowsGoBelow;
+            }
+        });
+    }
+}

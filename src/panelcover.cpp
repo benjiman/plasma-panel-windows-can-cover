@@ -83,14 +83,14 @@ void PanelCover::setView(QWindow *view)
         m_viewConnections << connect(m_view, &QWindow::heightChanged, this, placement);
         m_viewConnections << connect(m_view, &QWindow::screenChanged, this, placement);
         m_viewConnections << connect(m_view, &QWindow::visibleChanged, this, &PanelCover::scheduleEvaluate);
-        // PlasmaQuick::ContainmentView signals; string based so we need no PlasmaQuick dependency.
-        m_viewConnections << connect(m_view, SIGNAL(containmentChanged()), this, SLOT(updateContainment()));
+        // PlasmaQuick::ContainmentView signal; string based so we need no PlasmaQuick dependency.
         m_viewConnections << connect(m_view, SIGNAL(locationChanged(Plasma::Types::Location)), this, SLOT(updateTriggerPlacement()));
         // PanelView::userConfiguringChanged: panel settings dialog open.
         m_viewConnections << connect(m_view, SIGNAL(userConfiguringChanged()), this, SLOT(scheduleEvaluate()));
     }
 
-    updateContainment();
+    updateTriggerPlacement();
+    scheduleEvaluate();
     Q_EMIT viewChanged();
 }
 
@@ -128,14 +128,23 @@ bool PanelCover::raised() const
     return !m_lowered;
 }
 
-void PanelCover::updateContainment()
+QObject *PanelCover::containment() const
 {
-    for (const auto &c : std::as_const(m_containmentConnections)) {
-        disconnect(c);
+    return m_containment;
+}
+
+void PanelCover::setContainment(QObject *containment)
+{
+    auto *c = qobject_cast<Plasma::Containment *>(containment);
+    if (m_containment == c) {
+        return;
+    }
+    for (const auto &conn : std::as_const(m_containmentConnections)) {
+        disconnect(conn);
     }
     m_containmentConnections.clear();
 
-    m_containment = m_view ? qobject_cast<Plasma::Containment *>(m_view->property("containment").value<QObject *>()) : nullptr;
+    m_containment = c;
 
     if (m_containment) {
         m_containmentConnections << connect(m_containment, &Plasma::Applet::locationChanged, this, &PanelCover::updateTriggerPlacement);
@@ -152,6 +161,7 @@ void PanelCover::updateContainment()
 
     updateTriggerPlacement();
     scheduleEvaluate();
+    Q_EMIT containmentChanged();
 }
 
 void PanelCover::updateTriggerPlacement()

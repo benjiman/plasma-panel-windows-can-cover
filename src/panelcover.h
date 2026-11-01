@@ -36,6 +36,8 @@ class PanelCover : public QObject
 
     /// The PanelView (the panel's QWindow).
     Q_PROPERTY(QWindow *view READ view WRITE setView NOTIFY viewChanged)
+    /// The panel's Plasma::Containment (Panel.qml: containment.plasmoid).
+    Q_PROPERTY(QObject *containment READ containment WRITE setContainment NOTIFY containmentChanged)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
     /// How long after the pointer leaves the panel before windows may cover it again.
     Q_PROPERTY(int lowerDelay READ lowerDelay WRITE setLowerDelay NOTIFY lowerDelayChanged)
@@ -48,6 +50,9 @@ public:
     QWindow *view() const;
     void setView(QWindow *view);
 
+    QObject *containment() const;
+    void setContainment(QObject *containment);
+
     bool enabled() const;
     void setEnabled(bool enabled);
 
@@ -58,6 +63,7 @@ public:
 
 Q_SIGNALS:
     void viewChanged();
+    void containmentChanged();
     void enabledChanged();
     void lowerDelayChanged();
     void raisedChanged();
@@ -66,7 +72,6 @@ protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
 
 private Q_SLOTS:
-    void updateContainment();
     void updateTriggerPlacement();
     void scheduleEvaluate();
 

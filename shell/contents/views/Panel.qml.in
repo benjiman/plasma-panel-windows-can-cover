@@ -3,8 +3,7 @@
     SPDX-License-Identifier: GPL-2.0-or-later
 
     Wraps the stock panel instead of copying it, so it keeps working
-    across plasma6-desktop upgrades. In this shell the
-    "Windows go below" visibility mode behaves as "Windows can cover".
+    across plasma6-desktop upgrades.
 */
 
 import QtQuick
@@ -15,8 +14,14 @@ import "file://@STOCK_SHELL_DIR@/contents/views" as Stock
 Stock.Panel {
     id: windowsCanCoverPanel
 
+    WCC.CoverSetting {
+        id: coverSetting
+        containment: windowsCanCoverPanel.containment?.plasmoid ?? null
+    }
+
     WCC.PanelCover {
         view: panel
-        enabled: panel.visibilityMode === Panel.WindowsGoBelow
+        containment: windowsCanCoverPanel.containment?.plasmoid ?? null
+        enabled: coverSetting.windowsCanCover && panel.visibilityMode === Panel.WindowsGoBelow
     }
 }

@@ -1,0 +1,9 @@
+{
+    "KPlugin": {
+        "Description": "Lets windows cover Plasma panels in \"Windows can cover\" mode, keeping the panel in the normal window stack",
+        "EnabledByDefault": true,
+        "Id": "windowscancover",
+        "License": "GPL-2.0-or-later",
+        "Name": "Windows can cover panels"
+    }
+}

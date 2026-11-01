@@ -27,6 +27,7 @@ qt_add_qml_module(windowscancoverplugin
         src/plugin.cpp
         src/panelcover.cpp src/panelcover.h
         src/edgetrigger.cpp src/edgetrigger.h
+        src/coversetting.cpp src/coversetting.h
 )
 target_include_directories(windowscancoverplugin PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(windowscancoverplugin PRIVATE Qt6::Gui Qt6::Qml LayerShellQt::Interface Plasma::Plasma)
@@ -39,6 +40,13 @@ configure_file(shell/metadata.json.in ${CMAKE_CURRENT_BINARY_DIR}/shell/metadata
 configure_file(shell/contents/views/Panel.qml.in ${CMAKE_CURRENT_BINARY_DIR}/shell/contents/views/Panel.qml @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/shell/metadata.json DESTINATION ${CMAKE_INSTALL_DATADIR}/plasma/shells/${SHELL_ID})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/shell/contents/views/Panel.qml DESTINATION ${CMAKE_INSTALL_DATADIR}/plasma/shells/${SHELL_ID}/contents/views)
+configure_file(shell/contents/configuration/PanelConfiguration.qml.in ${CMAKE_CURRENT_BINARY_DIR}/shell/contents/configuration/PanelConfiguration.qml @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/shell/contents/configuration/PanelConfiguration.qml DESTINATION ${CMAKE_INSTALL_DATADIR}/plasma/shells/${SHELL_ID}/contents/configuration)
 
 configure_file(bin/plasma-windows-can-cover.in ${CMAKE_CURRENT_BINARY_DIR}/bin/plasma-windows-can-cover @ONLY)
 install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/bin/plasma-windows-can-cover DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+option(BUILD_KWIN_PLUGIN "Build the KWin plugin that keeps covered panels in the normal window stack" ON)
+if (BUILD_KWIN_PLUGIN)
+    add_subdirectory(kwin)
+endif()

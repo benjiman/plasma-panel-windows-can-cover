@@ -26,7 +26,7 @@ enable)
         ln -s "plasma-$STOCK_ID-appletsrc" "$OVERLAY_RC"
     fi
     kwriteconfig6 --file plasmashellrc --group Shell --key ShellPackage "$SHELL_ID"
-    echo "Enabled. Set a panel's visibility to \"Windows go below\" to get \"windows can cover\"."
+    echo "Enabled. In the panel settings choose Visibility: \"Windows can cover\"."
     restart_shell "${2:-}"
     ;;
 disable)
