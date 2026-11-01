@@ -1,0 +1,22 @@
+/*
+    SPDX-FileCopyrightText: 2026 Benji Weber
+    SPDX-License-Identifier: GPL-2.0-or-later
+
+    Wraps the stock panel instead of copying it, so it keeps working
+    across plasma6-desktop upgrades. In this shell the
+    "Windows go below" visibility mode behaves as "Windows can cover".
+*/
+
+import QtQuick
+import org.kde.plasma.shell
+import org.windowscancover as WCC
+import "file://@STOCK_SHELL_DIR@/contents/views" as Stock
+
+Stock.Panel {
+    id: windowsCanCoverPanel
+
+    WCC.PanelCover {
+        view: panel
+        enabled: panel.visibilityMode === Panel.WindowsGoBelow
+    }
+}

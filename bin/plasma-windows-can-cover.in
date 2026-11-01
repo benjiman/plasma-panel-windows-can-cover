@@ -1,0 +1,44 @@
+#!/bin/bash
+# Switch the current user's plasmashell to/from the "windows can cover" overlay shell.
+set -euo pipefail
+
+SHELL_ID="@SHELL_ID@"
+STOCK_ID="org.kde.plasma.desktop"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
+STOCK_RC="$CONFIG_DIR/plasma-$STOCK_ID-appletsrc"
+OVERLAY_RC="$CONFIG_DIR/plasma-$SHELL_ID-appletsrc"
+
+current() { kreadconfig6 --file plasmashellrc --group Shell --key ShellPackage --default "$STOCK_ID"; }
+
+restart_shell() {
+    if [[ "${1:-}" == "--no-restart" ]]; then
+        echo "Restart plasmashell to apply: systemctl --user restart plasma-plasmashell"
+    else
+        systemctl --user restart plasma-plasmashell.service
+    fi
+}
+
+case "${1:-status}" in
+enable)
+    # Share the panel/desktop layout with the stock shell via a symlink
+    # (KConfig writes through symlinks), so switching back and forth keeps one layout.
+    if [[ -e "$STOCK_RC" && ! -e "$OVERLAY_RC" && ! -L "$OVERLAY_RC" ]]; then
+        ln -s "plasma-$STOCK_ID-appletsrc" "$OVERLAY_RC"
+    fi
+    kwriteconfig6 --file plasmashellrc --group Shell --key ShellPackage "$SHELL_ID"
+    echo "Enabled. Set a panel's visibility to \"Windows go below\" to get \"windows can cover\"."
+    restart_shell "${2:-}"
+    ;;
+disable)
+    kwriteconfig6 --file plasmashellrc --group Shell --key ShellPackage --delete
+    echo "Disabled (back to $STOCK_ID)."
+    restart_shell "${2:-}"
+    ;;
+status)
+    echo "Shell package: $(current)"
+    ;;
+*)
+    echo "usage: $(basename "$0") enable|disable|status [--no-restart]" >&2
+    exit 2
+    ;;
+esac

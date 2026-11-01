@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "Plasma/Shell",
+    "KPlugin": {
+        "Authors": [{ "Name": "Benji Weber" }],
+        "Description": "Plasma desktop with the \"Windows can cover\" panel mode",
+        "Icon": "user-desktop",
+        "Id": "@SHELL_ID@",
+        "License": "GPL-2.0+",
+        "Name": "Desktop (windows can cover)"
+    },
+    "X-KDE-ParentApp": "org.kde.plasmashell",
+    "X-Plasma-APIVersion": "2",
+    "X-Plasma-FallbackPackage": "org.kde.plasma.desktop"
+}
